@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Vector Embeddings</title>
+  <script type="module">
+    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers';
+
+    // Function to generate a vector embedding
+    async function generateEmbedding() {
+      const text = document.getElementById('inputText').value; // Get input text
+      const outputDiv = document.getElementById('output');
+
+      if (!text.trim()) {
+        outputDiv.textContent = 'Please enter some text.';
+        return;
+      }
+
+      try {
+        // Load the pipeline for feature extraction
+        const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+
+        // Generate embeddings for the input text
+        const embeddings = await embedder(text, { pooling: 'mean', normalize: true });
+
+        // Display the flattened embedding vector
+        outputDiv.textContent = `Embedding Vector: ${embeddings.data}`;
+      } catch (error) {
+        console.error('Error generating embedding:', error);
+        outputDiv.textContent = 'An error occurred while generating the embedding.';
+      }
+    }
+  </script>
+</head>
+<body>
+  <div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h1>Generate Text Embedding</h1>
+    <p>Enter a text to generate its vector embedding:</p>
+    <textarea id="inputText" rows="4" style="width: 100%;"></textarea>
+    <br><br>
+    <button onclick="generateEmbedding()">Generate Embedding</button>
+    <div id="output" style="margin-top: 20px; font-weight: bold;"></div>
+  </div>
+</body>
+</html>
