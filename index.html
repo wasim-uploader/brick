@@ -7,8 +7,8 @@
   <script type="module">
     import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers';
 
-    // Function to generate a vector embedding
-    async function generateEmbedding() {
+    // Declare the function and attach it to the window object for global scope
+    window.generateEmbedding = async function() {
       const text = document.getElementById('inputText').value; // Get input text
       const outputDiv = document.getElementById('output');
 
@@ -30,7 +30,7 @@
         console.error('Error generating embedding:', error);
         outputDiv.textContent = 'An error occurred while generating the embedding.';
       }
-    }
+    };
   </script>
 </head>
 <body>
