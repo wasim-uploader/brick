@@ -4,11 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generate Vector Embeddings</title>
+</head>
+<body>
+  <div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h1>Generate Text Embedding</h1>
+    <p>Enter a text to generate its vector embedding:</p>
+    <textarea id="inputText" rows="4" style="width: 100%;"></textarea>
+    <br><br>
+    <button id="generateBtn">Generate Embedding</button>
+    <div id="output" style="margin-top: 20px; font-weight: bold;"></div>
+  </div>
+
+  <!-- Include the script at the bottom so that the elements are fully loaded -->
   <script type="module">
     import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers';
 
-    // Declare the function and attach it to the window object for global scope
-    window.generateEmbedding = async function() {
+    // Function to generate a vector embedding
+    async function generateEmbedding() {
       const text = document.getElementById('inputText').value; // Get input text
       const outputDiv = document.getElementById('output');
 
@@ -30,17 +42,10 @@
         console.error('Error generating embedding:', error);
         outputDiv.textContent = 'An error occurred while generating the embedding.';
       }
-    };
+    }
+
+    // Attach the function to the button's click event
+    document.getElementById('generateBtn').addEventListener('click', generateEmbedding);
   </script>
-</head>
-<body>
-  <div style="font-family: Arial, sans-serif; padding: 20px;">
-    <h1>Generate Text Embedding</h1>
-    <p>Enter a text to generate its vector embedding:</p>
-    <textarea id="inputText" rows="4" style="width: 100%;"></textarea>
-    <br><br>
-    <button onclick="generateEmbedding()">Generate Embedding</button>
-    <div id="output" style="margin-top: 20px; font-weight: bold;"></div>
-  </div>
 </body>
 </html>
