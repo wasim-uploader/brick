@@ -46,7 +46,7 @@
         outputDiv.textContent = 'Generating embedding...';
         const embeddings = await embedder(text, { pooling: 'mean', normalize: true });
         const vector = embeddings.data; // Flattened embedding vector as an array
-
+        console.log(vector);
         // Prepare the payload as a JSON object
         const payload = JSON.stringify({ query_vector: vector });
 
