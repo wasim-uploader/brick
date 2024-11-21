@@ -8,10 +8,13 @@
 <body>
   <div style="font-family: Arial, sans-serif; padding: 20px;">
     <h1>Generate Text Embedding</h1>
-    <p>Enter a text to generate its vector embedding:</p>
+    <p>Enter a text to generate its vector embedding and send it to the server:</p>
     <textarea id="inputText" rows="4" style="width: 100%;"></textarea>
     <br><br>
-    <button id="generateBtn">Generate Embedding</button>
+    <label for="endpoint">Endpoint URL:</label>
+    <input id="endpoint" type="text" style="width: 100%;" placeholder="Enter the API endpoint URL">
+    <br><br>
+    <button id="generateBtn">Generate and Send Embedding</button>
     <div id="output" style="margin-top: 20px; font-weight: bold;"></div>
   </div>
 
@@ -19,13 +22,19 @@
   <script type="module">
     import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers';
 
-    // Function to generate a vector embedding
-    async function generateEmbedding() {
+    // Function to generate a vector embedding and send it to an endpoint
+    async function generateAndSendEmbedding() {
       const text = document.getElementById('inputText').value; // Get input text
+      const endpoint = document.getElementById('endpoint').value; // Get endpoint URL
       const outputDiv = document.getElementById('output');
 
       if (!text.trim()) {
         outputDiv.textContent = 'Please enter some text.';
+        return;
+      }
+
+      if (!endpoint.trim()) {
+        outputDiv.textContent = 'Please enter a valid endpoint URL.';
         return;
       }
 
@@ -35,17 +44,36 @@
 
         // Generate embeddings for the input text
         const embeddings = await embedder(text, { pooling: 'mean', normalize: true });
+        const vector = embeddings.data; // Flattened embedding vector
 
-        // Display the flattened embedding vector
-        outputDiv.textContent = `Embedding Vector: ${embeddings.data}`;
+        // Prepare the payload
+        const payload = JSON.stringify({ query_vector: vector });
+
+        // Send the vector to the endpoint
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: payload,
+        });
+
+        // Handle the response
+        if (response.ok) {
+          const result = await response.json();
+          outputDiv.textContent = `Response from Server: ${JSON.stringify(result, null, 2)}`;
+        } else {
+          const errorText = await response.text();
+          outputDiv.textContent = `Error from Server: ${errorText}`;
+        }
       } catch (error) {
-        console.error('Error generating embedding:', error);
-        outputDiv.textContent = 'An error occurred while generating the embedding.';
+        console.error('Error generating or sending embedding:', error);
+        outputDiv.textContent = 'An error occurred while generating or sending the embedding.';
       }
     }
 
     // Attach the function to the button's click event
-    document.getElementById('generateBtn').addEventListener('click', generateEmbedding);
+    document.getElementById('generateBtn').addEventListener('click', generateAndSendEmbedding);
   </script>
 </body>
 </html>
